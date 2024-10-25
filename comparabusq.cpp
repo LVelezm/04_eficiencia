@@ -18,11 +18,12 @@ void interDirDer(int A[], int n){
 		
 	}
 }
-int secuencialOrd(int A[], int n, int num){
+int secuencialOrd(int A[], int n, int num, long long &comparaciones){
 	int i=0;
 	int pos;
 	while(i<n&&A[i]<num){
 		i=i+1;
+		comparaciones++;
 	}
 	if(i>n||A[i]!=num){
 		pos=-i;
@@ -32,7 +33,7 @@ int secuencialOrd(int A[], int n, int num){
 		return pos;
 	} 
 }
-int binaria(int A[], int n,int num){
+int binaria(int A[], int n,int num, long long &comparaciones){
 	int izq=0;
 	int der=n-1;
 	int cen=0;
@@ -40,6 +41,7 @@ int binaria(int A[], int n,int num){
 	int m;
 	while(izq<=der&&cen==0){
 		m=(izq+der)/2;
+		comparaciones++;  
 		if(A[m]==num){
 			cen=1;
 		}else{
@@ -73,17 +75,29 @@ int main(){
 	cin>>max;
 	int A[n];
 	int copia[n];
-	for(int i=0; i<n; i++){
-		A[i]=min + (rand()%(max-min+1));	
-	}
+ 	int count = 0;
+    while (count < n) {
+        int randomNum = min + (rand() % (max - min + 1));
+        bool isUnique = true;
+        for (int i = 0; i < count; i++) {
+            if (A[i] == randomNum) {
+                isUnique = false;
+                break;
+            }
+        }
+        if (isUnique) {
+            A[count] = randomNum;
+            count++;
+        }
+    }
 	interDirDer(A, n);
 	for(int i=0; i<n; i++){
 		copia[i]=A[i];
 		cout<<A[i]<<", ";
 	}
-		cout<<endl;
-		cout<<"Indique el numero a buscar: ";
-		cin>>num;
+	cout<<endl;
+	cout<<"Indique el numero a buscar: ";
+	cin>>num;
 	do{	
 		cout<<"Elija una opcion:"<<endl;
 		cout<<"1. Busqueda Binaria"<<endl;
@@ -92,23 +106,31 @@ int main(){
 		cout<<"opcion: ";
 		cin>>opcion;
 		if(opcion==1){
+			long long comparacionesBinaria = 0;
 			auto inicioBinaria=std::chrono::high_resolution_clock::now();
 			for(int i=0; i<1000000; i++){
-				pos=binaria(A,n,num);
+				pos=binaria(A,n,num, comparacionesBinaria);
 			}
 			auto finBinaria=std::chrono::high_resolution_clock::now();
 			auto duracionBinaria=std::chrono::duration_cast<std::chrono::milliseconds>(finBinaria-inicioBinaria).count();
-			cout<<"EL numero esta en la posicion: "<<pos<<endl;
+			cout<<"EL numero esta en la posicion: "<<pos+1<<endl;
 			cout<<"Tiempo de ordenacion por busqueda binaria: "<<duracionBinaria<<"ms"<<endl;
+			cout << "Comparaciones realizadas: " << comparacionesBinaria << endl;
+			cout<<"Indique el numero a buscar: ";
+			cin>>num;
 		}else if(opcion==2){
+			long long comparacionesSecuencial = 0;
 			auto inicioSecuencial=std::chrono::high_resolution_clock::now();
 			for(int i=0; i<1000000; i++){
-				pos=secuencialOrd(copia,n,num);
+				pos=secuencialOrd(copia,n,num, comparacionesSecuencial);
 			}
 			auto finSecuencial=std::chrono::high_resolution_clock::now();
 			auto duracionSecuencial=std::chrono::duration_cast<std::chrono::milliseconds>(finSecuencial-inicioSecuencial).count();
-			cout<<"EL numero esta en la posicion: "<<pos<<endl;
+			cout<<"EL numero esta en la posicion: "<<pos+1<<endl;
 			cout<<"Tiempo de ordenacion por busqueda secuencial: "<<duracionSecuencial<<"ms"<<endl;
+			cout << "Comparaciones realizadas: " << comparacionesSecuencial << endl;
+			cout<<"Indique el numero a buscar: ";
+			cin>>num;
 		}else if (opcion!=3){
 			cout<<"opcion invalida"<<endl; 
 		}
